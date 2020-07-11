@@ -12,8 +12,8 @@ type Database struct {
 	Db             *gorm.DB
 	Dsn            string
 	DsnTest        string
-	Dbtype         string
-	DbtypeTest     string
+	DbType         string
+	DbTypeTest     string
 	Debug          bool
 	AutomMigrateDb bool
 	Env            string
@@ -25,8 +25,8 @@ func NewDb() *Database {
 
 func NewDbTest() *gorm.DB {
 	dbInstance := NewDb()
-	dbInstance.Env = "Test"
-	dbInstance.DbtypeTest = "sqlite3"
+	dbInstance.Env = "test"
+	dbInstance.DbTypeTest = "sqlite3"
 	dbInstance.DsnTest = ":memory:"
 	dbInstance.AutomMigrateDb = true
 	dbInstance.Debug = true
@@ -44,9 +44,9 @@ func (d *Database) Connect() (*gorm.DB, error) {
 	var err error
 
 	if d.Env != "test" {
-		d.Db, err = gorm.Open(d.Dbtype, d.Dsn)
+		d.Db, err = gorm.Open(d.DbType, d.Dsn)
 	} else {
-		d.Db, err = gorm.Open(d.DbtypeTest, d.DsnTest)
+		d.Db, err = gorm.Open(d.DbTypeTest, d.DsnTest)
 	}
 
 	if err != nil {
