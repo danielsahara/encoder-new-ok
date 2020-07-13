@@ -3,9 +3,11 @@ package services
 import (
 	"cloud.google.com/go/storage"
 	"context"
+	pkg "golang.org/x/lint/testdata"
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -59,6 +61,41 @@ func (vu *VideoUpload) loadPaths() error {
 	}
 
 	return nil
+}
+
+func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan string) error {
+	in := make(chan int, runtime.NumCPU())
+
+	returnChannel := make(chan string)
+
+	err := vu.loadPaths()
+
+	if err != nil {
+		return err
+	}
+
+	uploadClient, ctx, err := getClientUpload()
+
+	if err != nil {
+		return err
+	}
+
+	for process := 0; process < concurrency; process++ {
+		go vu.uploadWorker(in, returnChannel, uploadClient, ctx)
+	}
+
+	go func() {
+		for x := 0; x < len(vu.Paths); x++ {
+			in <- x
+		}
+		close(in)
+	}()
+}
+
+func (vu *VideoUpload) uploadWorker(in chan int, returnChan chan string, uploadClient *storage.Client, ctx context.Context) {
+	for x := range in {
+
+	}
 }
 
 func getClientUpload() (*storage.Client, context.Context, error) {
