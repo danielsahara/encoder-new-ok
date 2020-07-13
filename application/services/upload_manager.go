@@ -3,7 +3,6 @@ package services
 import (
 	"cloud.google.com/go/storage"
 	"context"
-	pkg "golang.org/x/lint/testdata"
 	"io"
 	"log"
 	"os"
@@ -97,6 +96,8 @@ func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan string) er
 			break
 		}
 	}
+
+	return nil
 }
 
 func (vu *VideoUpload) uploadWorker(in chan int, returnChan chan string, uploadClient *storage.Client, ctx context.Context) {
@@ -111,7 +112,7 @@ func (vu *VideoUpload) uploadWorker(in chan int, returnChan chan string, uploadC
 
 		returnChan <- ""
 	}
-	returnChan <- "uploaded completed"
+	returnChan <- "upload completed"
 }
 
 func getClientUpload() (*storage.Client, context.Context, error) {
